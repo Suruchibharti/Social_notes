@@ -1,5 +1,6 @@
 import { UsersRound } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { useState } from "react";
 import { getFollowers, getFollowing } from "../api/users";
 import UserCard from "../components/user/UserCard";
 import EmptyState from "../components/ui/EmptyState";
@@ -12,8 +13,11 @@ export default function SocialListPage({ type }) {
   const { id } = useParams();
   const { user } = useAuth();
   const isFollowers = type === "followers";
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
   const state = useAsync(() => (isFollowers ? getFollowers(id || user?._id) : getFollowing()), [type, id, user?._id]);
   const list = isFollowers ? state.data?.followers : state.data?.following;
+  const visibleList = (list || []).slice(0, page * pageSize);
 
   return (
     <section className="page-stack">
@@ -25,7 +29,7 @@ export default function SocialListPage({ type }) {
       </div>
       <ErrorMessage message={state.error} />
       {state.loading && <Loader label="Loading people" />}
-      {!state.loading && list?.map((person) => (
+      {!state.loading && visibleList.map((person) => (
         <UserCard
           key={person._id}
           user={person}
@@ -47,6 +51,11 @@ export default function SocialListPage({ type }) {
           title={isFollowers ? "No followers yet" : "You are not following anyone yet"}
           text={isFollowers ? "Share more notes to grow your circle." : "Discover people and follow writers you like."}
         />
+      )}
+      {!state.loading && visibleList.length < (list?.length || 0) && (
+        <button className="secondary-btn load-more-btn" onClick={() => setPage((value) => value + 1)}>
+          Load more users
+        </button>
       )}
     </section>
   );
