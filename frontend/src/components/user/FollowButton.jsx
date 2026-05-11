@@ -1,12 +1,26 @@
 import { UserCheck, UserPlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { followUser, unfollowUser } from "../../api/users";
 import { useAuth } from "../../context/AuthContext";
 
-export default function FollowButton({ user, onChange }) {
+function getUserId(value) {
+  if (!value) return "";
+  if (typeof value === "object") return String(value._id || value.id || "");
+  return String(value);
+}
+
+export default function FollowButton({ user, onChange, forceFollowing = false }) {
   const { user: currentUser, refreshProfile } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(() => currentUser?.following?.includes(user?._id));
+  const authIsFollowing = useMemo(() => {
+    const targetId = getUserId(user);
+    return currentUser?.following?.some((item) => getUserId(item) === targetId);
+  }, [currentUser?.following, user?._id]);
+  const [isFollowing, setIsFollowing] = useState(() => forceFollowing || authIsFollowing);
+
+  useEffect(() => {
+    setIsFollowing(forceFollowing || Boolean(authIsFollowing));
+  }, [forceFollowing, authIsFollowing]);
 
   if (!user || currentUser?._id === user._id) return null;
 
@@ -29,7 +43,7 @@ export default function FollowButton({ user, onChange }) {
   return (
     <button className={isFollowing ? "secondary-btn" : "primary-btn"} onClick={toggle} disabled={loading}>
       {isFollowing ? <UserCheck size={18} /> : <UserPlus size={18} />}
-      <span>{isFollowing ? "Following" : "Follow"}</span>
+      <span>{isFollowing ? "Unfollow" : "Follow"}</span>
     </button>
   );
 }

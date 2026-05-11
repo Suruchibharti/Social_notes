@@ -19,14 +19,29 @@ export default function SocialListPage({ type }) {
     <section className="page-stack">
       <div className="page-header">
         <div>
-          <p className="eyebrow">Network</p>
           <h1>{isFollowers ? "Followers" : "Following"}</h1>
         </div>
         <UsersRound size={24} className="header-icon" />
       </div>
       <ErrorMessage message={state.error} />
       {state.loading && <Loader label="Loading people" />}
-      {!state.loading && list?.map((person) => <UserCard key={person._id} user={person} onFollowChange={() => state.run()} />)}
+      {!state.loading && list?.map((person) => (
+        <UserCard
+          key={person._id}
+          user={person}
+          forceFollowing={!isFollowers}
+          onFollowChange={(isFollowingNow) => {
+            if (!isFollowers && !isFollowingNow) {
+              state.setData({
+                ...state.data,
+                following: state.data.following.filter((item) => item._id !== person._id)
+              });
+              return;
+            }
+            state.run();
+          }}
+        />
+      ))}
       {!state.loading && list?.length === 0 && (
         <EmptyState
           title={isFollowers ? "No followers yet" : "You are not following anyone yet"}

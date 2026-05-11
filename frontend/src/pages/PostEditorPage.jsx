@@ -20,7 +20,8 @@ export default function PostEditorPage({ editMode = false }) {
       const data = editMode ? await updatePost(id, formData) : await createPost(formData);
       navigate(`/posts/${data.post._id}`);
     } catch (err) {
-      setError(err.message);
+      const message = err.message || "";
+      setError(message.toLowerCase().includes("content") ? "" : message);
     } finally {
       setSaving(false);
     }
@@ -32,7 +33,6 @@ export default function PostEditorPage({ editMode = false }) {
     <section className="page-stack">
       <div className="page-header">
         <div>
-          <p className="eyebrow">{editMode ? "Edit Post" : "Create Post"}</p>
           <h1>{editMode ? "Refine your note" : "Write a new note"}</h1>
         </div>
       </div>

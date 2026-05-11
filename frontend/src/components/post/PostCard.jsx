@@ -1,8 +1,7 @@
-import { Heart, MessageCircle, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { deletePost } from "../../api/posts";
 import { useAuth } from "../../context/AuthContext";
-import { getEngagement, toggleLike } from "../../utils/localEngagement";
 import { timeAgo } from "../../utils/format";
 import { useState } from "react";
 import Avatar from "../ui/Avatar";
@@ -10,7 +9,6 @@ import Avatar from "../ui/Avatar";
 export default function PostCard({ post, onDeleted }) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [engagement, setEngagement] = useState(() => getEngagement(post._id));
   const [busy, setBusy] = useState(false);
   const isOwner = user?._id === post.author?._id;
 
@@ -50,19 +48,9 @@ export default function PostCard({ post, onDeleted }) {
       </div>
       <Link to={`/posts/${post._id}`} className="post-link">
         <h2>{post.title}</h2>
-        <p>{post.content}</p>
+        {post.content?.trim() && <p>{post.content}</p>}
         {post.image && <img className="post-image" src={post.image} alt={post.title} />}
       </Link>
-      <div className="post-actions">
-        <button className={engagement.liked ? "reaction active" : "reaction"} onClick={() => setEngagement(toggleLike(post._id))}>
-          <Heart size={18} fill={engagement.liked ? "currentColor" : "none"} />
-          <span>{engagement.likes}</span>
-        </button>
-        <Link className="reaction" to={`/posts/${post._id}`}>
-          <MessageCircle size={18} />
-          <span>{engagement.comments.length}</span>
-        </Link>
-      </div>
     </article>
   );
 }

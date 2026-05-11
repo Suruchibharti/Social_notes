@@ -1,4 +1,4 @@
-import { Camera, Lock, Mail, User } from "lucide-react";
+import { Camera, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/auth";
@@ -9,6 +9,7 @@ export default function RegisterForm() {
   const [form, setForm] = useState({ username: "", email: "", password: "", profilePic: null });
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   function validate() {
@@ -84,7 +85,7 @@ export default function RegisterForm() {
         <div className={fieldErrors.password || error ? "field field-error" : "field"}>
           <Lock size={18} />
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Create a strong password"
             value={form.password}
             onChange={(e) => {
@@ -92,6 +93,9 @@ export default function RegisterForm() {
               setFieldErrors({ ...fieldErrors, password: "" });
             }}
           />
+          <button className="password-toggle" type="button" onClick={() => setShowPassword((value) => !value)} title="Show password">
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
         </div>
         {fieldErrors.password && <small className="field-error-text">{fieldErrors.password}</small>}
       </label>

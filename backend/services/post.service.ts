@@ -66,11 +66,14 @@ export const createUserPost = async (
 ) => {
   const { title, content, image = "" } = body;
 
-  if (!title || !content) {
-    throw new ApiError(400, "Title and content are required");
+  if (!title ) {
+    throw new ApiError(400, "Title is required");
   }
 
   const imageUrl = file ? (await uploadFile(file, "post-images")).url : image;
+  if(!imageUrl){
+    throw new ApiError(400, "Image is required");
+  }
 
   const post = new Post({
     author: authorId,

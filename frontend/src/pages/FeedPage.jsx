@@ -1,4 +1,3 @@
-import { RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getFeed } from "../api/posts";
@@ -47,16 +46,6 @@ export default function FeedPage() {
 
   return (
     <section className="page-stack">
-      <div className="page-header">
-        <div>
-          <p className="eyebrow">Home Feed</p>
-          <h1>Latest notes</h1>
-        </div>
-        <button className="secondary-btn" onClick={() => loadFeed(1, true)}>
-          <RefreshCw size={18} />
-          <span>Refresh</span>
-        </button>
-      </div>
       <ErrorMessage message={error} />
       {posts.map((post) => (
         <PostCard key={post._id} post={post} onDeleted={(id) => setPosts(posts.filter((item) => item._id !== id))} />

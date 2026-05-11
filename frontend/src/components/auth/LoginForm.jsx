@@ -1,4 +1,4 @@
-import { Eye, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -10,6 +10,7 @@ export default function LoginForm() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   function validate() {
@@ -60,7 +61,7 @@ export default function LoginForm() {
         <div className={fieldErrors.password || error ? "field field-error" : "field"}>
           <Lock size={18} />
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             value={form.password}
             onChange={(e) => {
@@ -68,13 +69,12 @@ export default function LoginForm() {
               setFieldErrors({ ...fieldErrors, password: "" });
             }}
           />
-          <Eye size={18} />
+          <button className="password-toggle" type="button" onClick={() => setShowPassword((value) => !value)} title="Show password">
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
         </div>
         {fieldErrors.password && <small className="field-error-text">{fieldErrors.password}</small>}
       </label>
-      <a className="forgot-link" href="#forgot" onClick={(e) => e.preventDefault()}>
-        Forgot password?
-      </a>
       <button className="primary-btn full" disabled={loading}>
         {loading ? "Signing in..." : "Sign in"}
       </button>

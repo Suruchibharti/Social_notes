@@ -23,11 +23,11 @@ const postSchema = new Schema<IPost>(
     },
     content: {
       type: String,
-      required: true
+  
     },
     image: {
       type: String,
-      default: ""
+      required: true,
     }
   },
   {

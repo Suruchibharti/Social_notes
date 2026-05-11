@@ -12,7 +12,7 @@
   --danger: #b42318;
   --shadow: 0 18px 44px rgba(24, 36, 34, 0.08);
   color-scheme: light;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 * {
@@ -84,34 +84,43 @@ button {
 }
 
 .app-body {
-  display: grid;
-  grid-template-columns: 260px minmax(0, 760px);
-  justify-content: center;
-  gap: 28px;
-  padding: 28px;
+  display: block;
+  padding: 28px 28px 28px 260px;
 }
 
 .sidebar {
-  position: sticky;
-  top: 100px;
-  height: calc(100vh - 120px);
+  position: fixed;
+  left: 0;
+  top: 72px;
+  z-index: 10;
+  height: calc(100vh - 72px);
+  border-right: 1px solid var(--line);
+  background: #fff;
 }
 
 .sidebar-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 260px;
+  min-height: 100%;
+  padding: 20px 24px;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.side-links {
   display: grid;
-  gap: 6px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  gap: 10px;
 }
 
 .side-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 13px 16px;
   border-radius: 7px;
   color: var(--muted);
   font-weight: 700;
@@ -125,11 +134,42 @@ button {
 
 .main-content {
   min-width: 0;
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding-top: 0;
+}
+
+.logout-link {
+  width: 100%;
+  border: 0;
+  background: transparent;
+}
+
+.sidebar-bottom {
+  display: grid;
+  gap: 10px;
+}
+
+.sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.sidebar-profile:hover {
+  color: var(--primary);
 }
 
 .page-stack {
   display: grid;
   gap: 18px;
+  width: min(100%, 760px);
+  margin: 0 auto;
 }
 
 .page-header {
@@ -278,7 +318,7 @@ button {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #8992ff;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .auth-benefits p {
@@ -320,9 +360,8 @@ button {
   font-size: 14px;
 }
 
-.auth-panel > p a,
-.forgot-link {
-  color: #4f46e5;
+.auth-panel > p a {
+  color: var(--primary);
   font-weight: 700;
 }
 
@@ -360,7 +399,12 @@ label {
 }
 
 label > span {
-  font-size: 13px;
+  font-size: 14px;
+}
+
+.auth-form label > span {
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .field,
@@ -400,7 +444,7 @@ label > span {
 
 .auth-form .field:focus-within,
 .auth-form .file-field:focus-within {
-  border-color: #4f46e5;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
@@ -421,6 +465,22 @@ label > span {
   outline: 0;
   color: var(--text);
   background: transparent;
+}
+
+.password-toggle {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 0;
+  color: #8fa0bd;
+  background: transparent;
+  padding: 0;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
 }
 
 .file-field {
@@ -448,11 +508,11 @@ label > span {
 .auth-form .primary-btn {
   min-height: 44px;
   margin-top: 18px;
-  background: #4f46e5;
+  background: var(--primary);
 }
 
 .auth-form .primary-btn:hover {
-  background: #4338ca;
+  background: var(--primary-strong);
 }
 
 .auth-hint {
@@ -471,11 +531,6 @@ label > span {
   font-weight: 500;
 }
 
-.forgot-link {
-  justify-self: end;
-  margin-top: -10px;
-  font-size: 14px;
-}
 
 .post-card {
   padding: 20px;
@@ -632,16 +687,25 @@ small,
   outline: 0;
   padding: 14px;
   background: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.plain-input::placeholder,
+.editor::placeholder {
+  color: #8a97a8;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .title-input {
-  font-size: 28px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .editor {
   min-height: 260px;
-  resize: vertical;
+  resize: none;
   line-height: 1.7;
 }
 
@@ -654,6 +718,19 @@ small,
   overflow: hidden;
 }
 
+.required-star {
+  color: #ff1f1f;
+}
+
+.input-error {
+  border-color: #ff4d4f;
+}
+
+.image-error-text {
+  display: block;
+  margin-top: 8px;
+}
+
 .form-footer {
   justify-content: space-between;
   gap: 12px;
@@ -662,10 +739,12 @@ small,
 .detail-wrap {
   display: grid;
   gap: 18px;
+  width: min(100%, 980px);
+  margin: 0 auto;
 }
 
 .post-detail {
-  padding: 28px;
+  padding: 34px;
 }
 
 .detail-author {
@@ -674,7 +753,7 @@ small,
 
 .detail-image {
   margin: 22px 0;
-  max-height: 520px;
+  max-height: 640px;
 }
 
 .detail-content {
@@ -748,6 +827,24 @@ small,
 
 .search-box {
   box-shadow: var(--shadow);
+}
+
+.discover-title {
+  display: grid;
+  gap: 6px;
+}
+
+.discover-title span {
+  max-width: 520px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.page-stack .search-box {
+  min-height: 54px;
+  border-radius: 10px;
+  background: #fff;
 }
 
 .user-card {
@@ -846,8 +943,23 @@ small,
   }
 
   .sidebar-card {
-    grid-template-columns: repeat(5, 1fr);
+    width: 100%;
+    min-height: auto;
+    flex-direction: row;
+    align-items: center;
     padding: 6px;
+  }
+
+  .side-links {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .logout-link {
+    width: 42px;
+    flex: 0 0 42px;
   }
 
   .side-link {

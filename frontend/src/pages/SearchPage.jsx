@@ -31,9 +31,9 @@ export default function SearchPage() {
   return (
     <section className="page-stack">
       <div className="page-header">
-        <div>
-          <p className="eyebrow">Discover</p>
+        <div className="discover-title">
           <h1>Find people</h1>
+          <span>Search creators by username or email and follow the voices you like.</span>
         </div>
       </div>
       <div className="search-box">
