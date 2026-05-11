@@ -1,4 +1,5 @@
 import { Camera, Edit3, Grid3X3, X } from "lucide-react";
+import { Search } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { updateCurrentProfile } from "../api/auth";
 import { getUserById as fetchUser } from "../api/users";
@@ -19,6 +20,7 @@ export default function ProfilePage({ mine = false }) {
   const [form, setForm] = useState({ username: "", email: "", profilePic: null });
   const [postPage, setPostPage] = useState(1);
   const [socialModal, setSocialModal] = useState(null);
+  const [socialSearch, setSocialSearch] = useState("");
   const postsPerPage = 9;
   const state = useAsync(async () => {
     if (mine) {
@@ -37,6 +39,9 @@ export default function ProfilePage({ mine = false }) {
   const postCount = posts.length;
   const visiblePosts = posts.slice(0, postPage * postsPerPage);
   const modalUsers = socialModal === "followers" ? profile.followers || [] : profile.following || [];
+  const filteredModalUsers = modalUsers.filter((person) =>
+    person.username?.toLowerCase().includes(socialSearch.toLowerCase())
+  );
 
   function updateProfilePhoto(file) {
     if (file) setForm({ ...form, profilePic: file });
@@ -86,10 +91,10 @@ export default function ProfilePage({ mine = false }) {
           </div>
           <div className="profile-stats">
             <span><strong>{postCount}</strong> posts</span>
-            <button type="button" onClick={() => setSocialModal("followers")}>
+            <button type="button" onClick={() => { setSocialSearch(""); setSocialModal("followers"); }}>
               <strong>{profile.followers?.length || 0}</strong> followers
             </button>
-            <button type="button" onClick={() => setSocialModal("following")}>
+            <button type="button" onClick={() => { setSocialSearch(""); setSocialModal("following"); }}>
               <strong>{profile.following?.length || 0}</strong> following
             </button>
           </div>
@@ -190,12 +195,19 @@ export default function ProfilePage({ mine = false }) {
                 <X size={18} />
               </button>
             </div>
+            <div className="social-search">
+              <Search size={17} />
+              <input value={socialSearch} onChange={(e) => setSocialSearch(e.target.value)} placeholder="Search" />
+            </div>
             <div className="social-modal-list">
-              {modalUsers.length > 0 ? modalUsers.map((person) => (
-                <Link className="social-modal-user" to={`/users/${person._id}`} key={person._id} onClick={() => setSocialModal(null)}>
-                  <Avatar user={person} size="sm" />
-                  <strong>{person.username}</strong>
-                </Link>
+              {filteredModalUsers.length > 0 ? filteredModalUsers.map((person) => (
+                <div className="social-modal-user" key={person._id}>
+                  <Link className="social-user-main" to={`/users/${person._id}`} onClick={() => setSocialModal(null)}>
+                    <Avatar user={person} size="sm" />
+                    <strong>{person.username}</strong>
+                  </Link>
+                  <FollowButton user={person} forceFollowing={socialModal === "following"} onChange={() => state.run()} />
+                </div>
               )) : <p className="muted">No users to show.</p>}
             </div>
           </div>
