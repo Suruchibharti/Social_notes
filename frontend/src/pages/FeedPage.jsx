@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getFeed } from "../api/posts";
 import PostCard from "../components/post/PostCard";
@@ -9,20 +9,19 @@ import Loader from "../components/ui/Loader";
 export default function FeedPage() {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
-  const [hasNext, setHasNext] = useState(true);
+  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const sentinelRef = useRef(null);
 
-  const loadFeed = useCallback(async (nextPage = 1, replace = false) => {
+  const loadFeed = useCallback(async (nextPage = 1) => {
     if (loading) return;
     setLoading(true);
     setError("");
     try {
-      const data = await getFeed({ page: nextPage, limit: 6 });
-      setPosts((current) => (replace ? data.posts : [...current, ...data.posts]));
+      const data = await getFeed({ page: nextPage, limit: 3 });
+      setPosts(data.posts || []);
       setPage(nextPage);
-      setHasNext(Boolean(data.pagination?.hasNextPage));
+      setPages(data.pagination?.pages || 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -31,18 +30,8 @@ export default function FeedPage() {
   }, [loading]);
 
   useEffect(() => {
-    loadFeed(1, true);
+    loadFeed(1);
   }, []);
-
-  useEffect(() => {
-    const node = sentinelRef.current;
-    if (!node || !hasNext) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !loading) loadFeed(page + 1);
-    });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [hasNext, loading, page, loadFeed]);
 
   return (
     <section className="page-stack">
@@ -58,7 +47,17 @@ export default function FeedPage() {
         />
       )}
       {loading && <Loader label="Loading notes" />}
-      <div ref={sentinelRef} className="feed-sentinel" />
+      {!loading && posts.length > 0 && (
+        <div className="pagination-controls">
+          <button className="secondary-btn" disabled={page === 1} onClick={() => loadFeed(page - 1)}>
+            Previous
+          </button>
+          <span>{page} / {pages}</span>
+          <button className="secondary-btn" disabled={page === pages} onClick={() => loadFeed(page + 1)}>
+            Next
+          </button>
+        </div>
+      )}
     </section>
   );
 }

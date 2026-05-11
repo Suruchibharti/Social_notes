@@ -17,7 +17,8 @@ export default function SocialListPage({ type }) {
   const pageSize = 6;
   const state = useAsync(() => (isFollowers ? getFollowers(id || user?._id) : getFollowing()), [type, id, user?._id]);
   const list = isFollowers ? state.data?.followers : state.data?.following;
-  const visibleList = (list || []).slice(0, page * pageSize);
+  const totalPages = Math.max(1, Math.ceil((list?.length || 0) / pageSize));
+  const visibleList = (list || []).slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <section className="page-stack">
@@ -52,10 +53,16 @@ export default function SocialListPage({ type }) {
           text={isFollowers ? "Share more notes to grow your circle." : "Discover people and follow writers you like."}
         />
       )}
-      {!state.loading && visibleList.length < (list?.length || 0) && (
-        <button className="secondary-btn load-more-btn" onClick={() => setPage((value) => value + 1)}>
-          Load more users
-        </button>
+      {!state.loading && (list?.length || 0) > pageSize && (
+        <div className="pagination-controls">
+          <button className="secondary-btn" disabled={page === 1} onClick={() => setPage((value) => value - 1)}>
+            Previous
+          </button>
+          <span>{page} / {totalPages}</span>
+          <button className="secondary-btn" disabled={page === totalPages} onClick={() => setPage((value) => value + 1)}>
+            Next
+          </button>
+        </div>
       )}
     </section>
   );
